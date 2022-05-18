@@ -1,0 +1,43 @@
+<html style="height:100%;">
+<head>
+<meta charset="utf-8">
+<script>
+var webSocket;
+function addLog(s) { 
+  var log = document.getElementById('log');
+  log.value = s + "\n---------------------------------\n" + log.value; 
+}
+function connect()  {
+  webSocket = new WebSocket('ws://127.0.0.1:28563');
+  webSocket.onopen = function() {
+    addLog("Соединение с веб-сокет сервером установлено");
+  };
+  webSocket.onclose = function() {
+    addLog("Соединение с веб-сокет сервером разорвано");
+  };
+  webSocket.onerror = function(error) {
+    addLog("Ошибка " + error.message);
+  };
+  webSocket.onmessage = function(event) {
+      addLog("Получен ответ: " + event.data);
+  };
+}
+function send() {
+    if (typeof webSocket == 'undefined') { alert('Вы не подключены к веб-сокет серверу'); return; }
+    var data = document.getElementById('query').value;
+    webSocket.send(data);
+    addLog("Отправлен запрос: "+data);
+};
+</script>
+</head>
+<body style="background:linear-gradient(to bottom, #627d4d 0%,#1f3b08 100%);text-align:center; color:#fff; margin: 0; position:absolute; top:0; left:0; right:0; bottom:0">
+<h1 style='margin-top:30px;'>Тестирование веб-сокет сервера</h1>
+<form style="display:inline-block">
+<input type=button value="Подключиться" style='width:200px; height:80px;' onclick="connect();"><br><br>
+<h2>Запрос:</h2>
+<textarea rows="10" cols="100" style='padding:5px;' id='query'></textarea><br>
+<input type=button value="Отправить" style='width:200px; height:80px;' onclick="send();"><br><br>
+<h2>Ответы:</h2>
+<textarea rows="10" cols="100" style='padding:5px;' id='log'></textarea>
+</body>
+</html>
